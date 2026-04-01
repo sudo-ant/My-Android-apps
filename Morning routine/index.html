@@ -7,7 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Morning">
-<title>Morning Routine</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<title>Morning</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,7 +51,6 @@
     min-height: 100dvh;
   }
 
-  /* Header */
   .header {
     padding: 56px 24px 28px;
     position: relative;
@@ -80,17 +81,9 @@
     line-height: 1.1;
     margin-bottom: 6px;
   }
-  .header h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .subtitle {
-    font-size: 14px;
-    color: var(--text2);
-    font-weight: 300;
-  }
+  .header h1 em { font-style: italic; color: var(--accent); }
+  .subtitle { font-size: 14px; color: var(--text2); font-weight: 300; }
 
-  /* Progress ring */
   .progress-ring-wrap {
     display: flex;
     align-items: center;
@@ -113,7 +106,6 @@
   .progress-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
   .progress-sub { font-size: 13px; color: var(--text2); font-weight: 300; }
 
-  /* Section label */
   .section-label {
     font-size: 11px;
     letter-spacing: 0.1em;
@@ -124,7 +116,6 @@
     margin-bottom: 10px;
   }
 
-  /* Items */
   .items { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
 
   .item {
@@ -141,10 +132,7 @@
     touch-action: manipulation;
   }
   .item:active { transform: scale(0.98); }
-  .item.done {
-    background: var(--done-bg);
-    border-color: rgba(74,222,154,0.15);
-  }
+  .item.done { background: var(--done-bg); border-color: rgba(74,222,154,0.15); }
 
   .check-circle {
     width: 26px; height: 26px;
@@ -154,51 +142,27 @@
     margin-top: 1px;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.25s, border-color 0.25s;
-    position: relative;
-    overflow: hidden;
   }
-  .item.done .check-circle {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
+  .item.done .check-circle { background: var(--accent); border-color: var(--accent); }
   .check-circle svg { opacity: 0; transform: scale(0.5); transition: opacity 0.2s, transform 0.2s; }
   .item.done .check-circle svg { opacity: 1; transform: scale(1); }
 
   .item-body { flex: 1; min-width: 0; }
-  .item-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 4px;
-    transition: color 0.2s;
-  }
+  .item-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; transition: color 0.2s; }
   .item.done .item-name { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--accent-dim); }
 
   .item-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .item-time { font-size: 12px; color: var(--text3); font-weight: 400; }
   .dot { font-size: 12px; color: var(--text3); }
 
-  .tag {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    padding: 2px 8px;
-    border-radius: 99px;
-  }
+  .tag { font-size: 10px; font-weight: 500; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 99px; }
   .tag-energy { background: var(--tag-energy); color: var(--tag-energy-text); }
   .tag-focus { background: var(--tag-focus); color: var(--tag-focus-text); }
   .tag-nutrition { background: var(--tag-nutrition); color: var(--tag-nutrition-text); }
 
-  .item-note {
-    font-size: 12px;
-    color: var(--text3);
-    margin-top: 5px;
-    line-height: 1.5;
-    font-weight: 300;
-  }
+  .item-note { font-size: 12px; color: var(--text3); margin-top: 5px; line-height: 1.5; font-weight: 300; }
   .item.done .item-note { display: none; }
 
-  /* Complete state */
   .complete-banner {
     margin: 20px 16px 0;
     padding: 20px 24px;
@@ -212,19 +176,14 @@
   .complete-banner .icon { font-size: 28px; margin-bottom: 8px; }
   .complete-banner h3 {
     font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--accent);
-    font-weight: 400;
-    margin-bottom: 4px;
+    font-size: 22px; color: var(--accent); font-weight: 400; margin-bottom: 4px;
   }
   .complete-banner p { font-size: 13px; color: var(--text2); font-weight: 300; }
 
-  /* Reset */
   .reset-wrap { padding: 24px 16px 0; text-align: center; }
   .reset-btn {
     font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text3);
+    font-size: 13px; color: var(--text3);
     background: none;
     border: 1px solid rgba(74,222,154,0.12);
     border-radius: 99px;
@@ -298,20 +257,22 @@ const PROG_TEXT = [
 const KEY = 'morningRoutine_done';
 const DATE_KEY = 'morningRoutine_date';
 
-function getToday() {
-  return new Date().toDateString();
-}
+function getToday() { return new Date().toDateString(); }
 
 function loadDone() {
-  const saved = localStorage.getItem(KEY);
-  const savedDate = localStorage.getItem(DATE_KEY);
-  if (savedDate !== getToday()) return new Array(STEPS.length).fill(false);
-  return saved ? JSON.parse(saved) : new Array(STEPS.length).fill(false);
+  try {
+    const savedDate = localStorage.getItem(DATE_KEY);
+    if (savedDate !== getToday()) return new Array(STEPS.length).fill(false);
+    const saved = localStorage.getItem(KEY);
+    return saved ? JSON.parse(saved) : new Array(STEPS.length).fill(false);
+  } catch(e) { return new Array(STEPS.length).fill(false); }
 }
 
 function saveDone(done) {
-  localStorage.setItem(KEY, JSON.stringify(done));
-  localStorage.setItem(DATE_KEY, getToday());
+  try {
+    localStorage.setItem(KEY, JSON.stringify(done));
+    localStorage.setItem(DATE_KEY, getToday());
+  } catch(e) {}
 }
 
 let done = loadDone();
@@ -342,7 +303,6 @@ function render() {
     const div = document.createElement('div');
     div.className = 'item' + (done[i] ? ' done' : '');
     div.onclick = () => { done[i] = !done[i]; saveDone(done); render(); };
-
     const tags = s.tags.map(t => `<span class="tag tag-${t}">${t.charAt(0).toUpperCase()+t.slice(1)}</span>`).join('');
     div.innerHTML = `
       <div class="check-circle">
@@ -358,15 +318,17 @@ function render() {
     container.appendChild(div);
   });
 
-  const banner = document.getElementById('complete-banner');
-  if (count === total) { banner.classList.add('show'); }
-  else { banner.classList.remove('show'); }
+  document.getElementById('complete-banner').classList.toggle('show', count === total);
 }
 
 function resetAll() {
   done = new Array(STEPS.length).fill(false);
   saveDone(done);
   render();
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 updateDate();

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Morning">
+<title>Morning Routine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1f1a;
+    --bg2: #142920;
+    --bg3: #1a3329;
+    --accent: #4ade9a;
+    --accent-dim: #2a6b50;
+    --text: #e8f5ee;
+    --text2: #8abda0;
+    --text3: #4a7a62;
+    --done-bg: #0f2920;
+    --tag-energy: #2a4a35;
+    --tag-energy-text: #7dcf9e;
+    --tag-focus: #1e3a4a;
+    --tag-focus-text: #7ab8d4;
+    --tag-nutrition: #3a3a1a;
+    --tag-nutrition-text: #c4c060;
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 80px;
+    min-height: 100dvh;
+  }
+
+  /* Header */
+  .header {
+    padding: 56px 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,222,154,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .date-line {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--text2);
+    font-weight: 300;
+  }
+
+  /* Progress ring */
+  .progress-ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    background: var(--bg2);
+    margin: 0 16px 24px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(74,222,154,0.08);
+  }
+  .ring-container { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+  .ring-svg { transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--bg3); stroke-width: 5; }
+  .ring-fill { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+  .ring-num {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 16px; font-weight: 500; color: var(--text); letter-spacing: -0.02em;
+  }
+  .progress-text { flex: 1; }
+  .progress-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .progress-sub { font-size: 13px; color: var(--text2); font-weight: 300; }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-weight: 500;
+    padding: 0 24px;
+    margin-bottom: 10px;
+  }
+
+  /* Items */
+  .items { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--bg2);
+    border-radius: var(--radius);
+    border: 1px solid rgba(74,222,154,0.07);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, border-color 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .item:active { transform: scale(0.98); }
+  .item.done {
+    background: var(--done-bg);
+    border-color: rgba(74,222,154,0.15);
+  }
+
+  .check-circle {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text3);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.25s, border-color 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .item.done .check-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .check-circle svg { opacity: 0; transform: scale(0.5); transition: opacity 0.2s, transform 0.2s; }
+  .item.done .check-circle svg { opacity: 1; transform: scale(1); }
+
+  .item-body { flex: 1; min-width: 0; }
+  .item-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    transition: color 0.2s;
+  }
+  .item.done .item-name { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--accent-dim); }
+
+  .item-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .item-time { font-size: 12px; color: var(--text3); font-weight: 400; }
+  .dot { font-size: 12px; color: var(--text3); }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+  .tag-energy { background: var(--tag-energy); color: var(--tag-energy-text); }
+  .tag-focus { background: var(--tag-focus); color: var(--tag-focus-text); }
+  .tag-nutrition { background: var(--tag-nutrition); color: var(--tag-nutrition-text); }
+
+  .item-note {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 5px;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+  .item.done .item-note { display: none; }
+
+  /* Complete state */
+  .complete-banner {
+    margin: 20px 16px 0;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1a4a35, #0f3025);
+    border-radius: var(--radius);
+    border: 1px solid rgba(74,222,154,0.25);
+    text-align: center;
+    display: none;
+  }
+  .complete-banner.show { display: block; }
+  .complete-banner .icon { font-size: 28px; margin-bottom: 8px; }
+  .complete-banner h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .complete-banner p { font-size: 13px; color: var(--text2); font-weight: 300; }
+
+  /* Reset */
+  .reset-wrap { padding: 24px 16px 0; text-align: center; }
+  .reset-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text3);
+    background: none;
+    border: 1px solid rgba(74,222,154,0.12);
+    border-radius: 99px;
+    padding: 8px 22px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .reset-btn:active { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="date-line" id="date-line">Wednesday</div>
+    <h1>Good<br><em>morning.</em></h1>
+    <p class="subtitle">Your 1-hour power routine</p>
+  </div>
+
+  <div class="progress-ring-wrap">
+    <div class="ring-container">
+      <svg class="ring-svg" width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-track" cx="32" cy="32" r="27"/>
+        <circle class="ring-fill" id="ring-fill" cx="32" cy="32" r="27"
+          stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+      </svg>
+      <div class="ring-num" id="ring-num">0/7</div>
+    </div>
+    <div class="progress-text">
+      <div class="progress-title" id="prog-title">Let's get started</div>
+      <div class="progress-sub" id="prog-sub">Tap each step as you complete it</div>
+    </div>
+  </div>
+
+  <div class="section-label">Today's steps</div>
+  <div class="items" id="items"></div>
+
+  <div class="complete-banner" id="complete-banner">
+    <div class="icon">🌿</div>
+    <h3>Routine complete!</h3>
+    <p>You've set yourself up brilliantly. Have a great day.</p>
+  </div>
+
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetAll()">Reset for tomorrow</button>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { name: "Wake up & hydrate", time: "5 min", tags: ["energy"], note: "Drink a full glass of water before anything else." },
+  { name: "Light movement & stretching", time: "5 min", tags: ["energy"], note: "Loosen up to signal wake-up to your body." },
+  { name: "Exercise", time: "25 min", tags: ["energy"], note: "Cardio, strength, or a brisk walk — the core of the routine." },
+  { name: "Cold or warm shower", time: "5 min", tags: ["energy", "focus"], note: "A cool rinse sharpens alertness fast." },
+  { name: "High-protein breakfast", time: "10 min", tags: ["nutrition"], note: "Eggs, Greek yogurt, or a protein smoothie." },
+  { name: "Review top 3 priorities", time: "5 min", tags: ["focus"], note: "What 3 things would make today a success?" },
+  { name: "5-min mindful focus", time: "5 min", tags: ["focus"], note: "Slow breathing to set a calm, intentional tone." }
+];
+
+const PROG_TEXT = [
+  ["Let's get started", "Tap each step as you complete it"],
+  ["Nice — you've begun!", "Keep the momentum going"],
+  ["Building momentum", "You're doing great"],
+  ["Halfway there", "Keep going — you're on a roll"],
+  ["Looking strong", "Almost at the finish line"],
+  ["Nearly there!", "One or two steps left"],
+  ["One more to go!", "Finish strong"],
+  ["Routine complete!", "Outstanding effort today"]
+];
+
+const KEY = 'morningRoutine_done';
+const DATE_KEY = 'morningRoutine_date';
+
+function getToday() {
+  return new Date().toDateString();
+}
+
+function loadDone() {
+  const saved = localStorage.getItem(KEY);
+  const savedDate = localStorage.getItem(DATE_KEY);
+  if (savedDate !== getToday()) return new Array(STEPS.length).fill(false);
+  return saved ? JSON.parse(saved) : new Array(STEPS.length).fill(false);
+}
+
+function saveDone(done) {
+  localStorage.setItem(KEY, JSON.stringify(done));
+  localStorage.setItem(DATE_KEY, getToday());
+}
+
+let done = loadDone();
+
+function updateDate() {
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const d = new Date();
+  document.getElementById('date-line').textContent =
+    days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()];
+}
+
+function render() {
+  const count = done.filter(Boolean).length;
+  const total = STEPS.length;
+  const circ = 2 * Math.PI * 27;
+  const offset = circ * (1 - count / total);
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-num').textContent = count + '/' + total;
+
+  const [title, sub] = PROG_TEXT[count];
+  document.getElementById('prog-title').textContent = title;
+  document.getElementById('prog-sub').textContent = sub;
+
+  const container = document.getElementById('items');
+  container.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'item' + (done[i] ? ' done' : '');
+    div.onclick = () => { done[i] = !done[i]; saveDone(done); render(); };
+
+    const tags = s.tags.map(t => `<span class="tag tag-${t}">${t.charAt(0).toUpperCase()+t.slice(1)}</span>`).join('');
+    div.innerHTML = `
+      <div class="check-circle">
+        <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+          <polyline points="1,5 4.5,8.5 11,1" stroke="#0d1f1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="item-body">
+        <div class="item-name">${s.name}</div>
+        <div class="item-row"><span class="item-time">${s.time}</span><span class="dot">·</span>${tags}</div>
+        <div class="item-note">${s.note}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+
+  const banner = document.getElementById('complete-banner');
+  if (count === total) { banner.classList.add('show'); }
+  else { banner.classList.remove('show'); }
+}
+
+function resetAll() {
+  done = new Array(STEPS.length).fill(false);
+  saveDone(done);
+  render();
+}
+
+updateDate();
+render();
+</script>
+</body>
+</html>
